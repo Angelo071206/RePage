@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Profilo Utente</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #eef; padding: 20px; }
+        .book-list, .add-form { background: #fff; padding: 15px; margin: 10px auto; width: 400px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 12px; border: none; border-radius: 4px; background: #0077cc; color: white; cursor: pointer; }
+        button:hover { background: #005fa3; }
+        .links { margin-top: 20px; text-align: center; }
+        .links a { color: #0077cc; text-decoration: none; font-weight: bold; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="add-form">
+    <h3>Aggiungi Libro</h3>
+    <input type="text" id="titolo" placeholder="Titolo">
+    <input type="text" id="autore" placeholder="Autore">
+    <input type="text" id="immagine" placeholder="Link immagine">
+    <button onclick="addBook()">Aggiungi</button>
+</div>
+
+<div class="book-list" id="books">
+    <h3>I tuoi libri</h3>
+</div>
+
+<div class="links">
+    <a href="Index.php">Torna alla Homepage</a>
+</div>
+
+<script>
+async function loadBooks() {
+    let response = await fetch('api/get_books.php');
+    let books = await response.json();
+    let list = document.getElementById('books');
+    list.innerHTML = '<h3>I tuoi libri</h3>';
+    books.forEach(b => {
+        list.innerHTML += `<div><img src="${b.immagine}" width="100"><br>${b.titolo} - ${b.autore}</div>`;
+    });
+}
+
+async function addBook() {
+    let titolo = document.getElementById('titolo').value;
+    let autore = document.getElementById('autore').value;
+    let immagine = document.getElementById('immagine').value;
+
+    let response = await fetch('api/add_book.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({titolo, autore, immagine})
+    });
+
+    let result = await response.json();
+    if (result.success) {
+        loadBooks();
+    } else {
+        alert('Errore nell\'aggiunta!');
+    }
+}
+
+window.onload = loadBooks;
+</script>
+
+</body>
+</html>

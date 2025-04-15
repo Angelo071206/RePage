@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifica Profilo</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 30px; }
+        .box { background: #fff; padding: 20px; border-radius: 8px; width: 300px; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; border: none; border-radius: 4px; background: #0077cc; color: white; cursor: pointer; }
+        button:hover { background: #005fa3; }
+        .links { margin-top: 20px; }
+        .links a { color: #0077cc; text-decoration: none; margin: 0 10px; font-weight: bold; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Modifica Dati</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="nome" placeholder="Nome">
+    <input type="text" id="cognome" placeholder="Cognome">
+    <input type="password" id="password" placeholder="Password per confermare" required>
+    <button onclick="updateUser()">Salva modifiche</button>
+</div>
+
+<div class="links">
+    <a href="index.php">Torna alla Homepage</a>
+    <a href="profilo.html">Torna al Profilo</a>
+</div>
+
+<script>
+async function updateUser() {
+    let email = document.getElementById('email').value.trim();
+    let nome = document.getElementById('nome').value.trim();
+    let cognome = document.getElementById('cognome').value.trim();
+    let password = document.getElementById('password').value.trim();
+
+    let data = {};
+    if (email) data.email = email;
+    if (nome) data.nome = nome;
+    if (cognome) data.cognome = cognome;
+
+    if (Object.keys(data).length === 0) {
+        alert("Inserisci almeno un dato da modificare.");
+        return;
+    }
+
+    if (!password) {
+        alert("Per confermare le modifiche devi inserire la tua password.");
+        return;
+    }
+
+    if (confirm("Sei sicuro di voler aggiornare i dati inseriti?")) {
+        try {
+            let response = await fetch('api/update_user.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({data, password})
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert('Dati aggiornati con successo!');
+            } else {
+                alert('Errore: ' + result.error);
+            }
+        } catch (error) {
+            alert('Errore di rete: ' + error.message);
+        }
+    }
+}
+</script>
+
+</body>
+</html>
