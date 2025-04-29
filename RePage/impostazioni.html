@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifica Profilo</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 30px; }
+        .box { background: #fff; padding: 20px; border-radius: 8px; width: 300px; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        button { padding: 10px 15px; margin: 8px 0; border: none; border-radius: 4px; background: #0077cc; color: white; cursor: pointer; width: 90%; }
+        button:hover { background: #005fa3; }
+        .delete-button { background: #ff3333; }
+        .delete-button:hover { background: #cc0000; }
+        .links { margin-top: 20px; }
+        .links a { color: #0077cc; text-decoration: none; margin: 0 10px; font-weight: bold; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Cosa vuoi modificare?</h2>
+    <button onclick="location.href='modifica_nome.html'">Nome</button>
+    <button onclick="location.href='modifica_cognome.html'">Cognome</button>
+    <button onclick="location.href='modifica_email.html'">Email</button>
+    <button onclick="location.href='modifica_password.html'">Password</button>
+    <button class="delete-button" onclick="location.href='elimina_profilo.html'">Elimina Profilo</button>
+</div>
+
+<div class="links">
+    <a href="index.php">Torna alla Homepage</a>
+    <a href="profilo.html">Torna al Profilo</a>
+</div>
+
+</body>
+</html>
