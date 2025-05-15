@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Registrazione</title>
+<style>
+    body {
+        background-color: #f2f2f2;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: #333;
+    }
+    .register-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+    input, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        font-size: 16px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        margin-top: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    .message {
+        margin-top: 15px;
+        font-size: 14px;
+        height: 18px;
+    }
+    label {
+        text-align: left;
+        display: block;
+        margin-top: 15px;
+    }
+    .home-link {
+        margin-top: 30px;
+        display: block;
+        text-decoration: none;
+        color: #4CAF50;
+        font-weight: bold;
+    }
+    .home-link:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+
+<div class="register-container">
+    <h1>Crea il tuo account</h1>
+    <form id="registerForm" autocomplete="off">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" required placeholder="Inserisci il tuo nome" />
+        
+        <label for="cognome">Cognome</label>
+        <input type="text" id="cognome" required placeholder="Inserisci il tuo cognome" />
+        
+        <label for="email">Email</label>
+        <input type="email" id="email" required placeholder="Inserisci la tua email" />
+        
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="Inserisci la tua password" />
+        
+        <div style="margin-top:10px; text-align:left;">
+            <input type="checkbox" id="accettoTermini" required />
+            <label for="accettoTermini" style="display:inline;">Accetto i <a href="termini.html" target="_blank">termini e condizioni</a></label>
+        </div>
+
+        <button type="submit">Registrati</button>
+    </form>
+    <div id="message" class="message"></div>
+    <a href="index.php" class="home-link">Torna alla Homepage</a>
+</div>
+
+<!-- CryptoJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<script>
+(() => {
+    const secretKey = 'questaÈLaMiaChiaveSegreta123!';
+
+    function getKeyIv(secret) {
+        const key = CryptoJS.SHA256(secret);
+        const iv = CryptoJS.lib.WordArray.create(key.words.slice(0, 4));
+        return { key, iv };
+    }
+
+    const { key, iv } = getKeyIv(secretKey);
+
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const messageEl = document.getElementById('message');
+        messageEl.style.color = 'red';
+        messageEl.textContent = '';
+
+        const nome = document.getElementById('nome').value.trim();
+        const cognome = document.getElementById('cognome').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (password.length < 8) {
+            messageEl.textContent = 'La password deve avere almeno 8 caratteri.';
+            return;
+        }
+
+        const encrypted = CryptoJS.AES.encrypt(password, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+        const encryptedPassword = encrypted.toString();
+
+        const payload = { nome, cognome, email, password: encryptedPassword };
+
+        try {
+            const response = await fetch('api/register.php', { 
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.message) {
+                messageEl.style.color = 'green';
+                messageEl.textContent = data.message;
+                setTimeout(() => window.location.href = 'index.php', 1500);
+            } else {
+                messageEl.textContent = data.error || 'Errore sconosciuto';
+            }
+			
+        } catch {
+            messageEl.textContent = 'Errore di rete o server.';
+        }
+    });
+})();
+</script>
+
+</body>
+</html>
