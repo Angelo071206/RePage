@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Aggiungi Libro</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 30px; text-align: center; }
+        .box { background: #fff; padding: 20px; border-radius: 8px; width: 300px; margin: 0 auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        input, textarea { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; border: none; border-radius: 4px; background: #0077cc; color: white; cursor: pointer; width: 90%; }
+        button:hover { background: #005fa3; }
+        .links { margin-top: 20px; }
+        .links a { color: #0077cc; text-decoration: none; margin: 0 10px; font-weight: bold; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Aggiungi un Nuovo Libro</h2>
+    <form id="add-book-form">
+        <input type="text" id="titolo" placeholder="Titolo" required>
+        <input type="text" id="autore" placeholder="Autore" required>
+        <input type="text" id="isbn" placeholder="ISBN" required>
+        <select id="condizione" required>
+            <option value="Nuovo">Nuovo</option>
+            <option value="Ottimo">Ottimo</option>
+            <option value="Buono">Buono</option>
+            <option value="Accettabile">Accettabile</option>
+            <option value="Scadente">Scadente</option>
+        </select>
+        <textarea id="descrizione" placeholder="Descrizione" required></textarea>
+        <input type="file" id="immagine" required>
+        <button type="submit">Salva</button>
+    </form>
+</div>
+
+<div class="links">
+    <a href="profilo.html">Torna al Profilo</a>
+</div>
+
+<script>
+document.getElementById('add-book-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('titolo', document.getElementById('titolo').value);
+    formData.append('autore', document.getElementById('autore').value);
+    formData.append('isbn', document.getElementById('isbn').value);
+    formData.append('condizione', document.getElementById('condizione').value);
+    formData.append('descrizione', document.getElementById('descrizione').value);
+    formData.append('immagine', document.getElementById('immagine').files[0]);
+
+    try {
+        let response = await fetch('api/aggiungi_libro.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        let data = await response.json();
+        if (data.success) {
+            alert('Libro aggiunto con successo!');
+            window.location.href = 'profilo.html'; // Torna al profilo
+        } else {
+            alert('Errore: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Errore durante l\'aggiunta del libro:', error);
+    }
+});
+</script>
+
+</body>
+</html>
